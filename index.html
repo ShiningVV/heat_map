@@ -1,0 +1,612 @@
+
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>2_numpy</title>
+  <!-- voila log js -->
+  <script>
+    const _debug = console.debug;
+    const _info = console.info;
+    const _warn = console.warn;
+    const _error = console.error;
+
+    function post(payload) {
+      try {
+        window.top.postMessage(payload);
+      } catch(err) {
+        window.top.postMessage({ level: "debug", msg: ["[Voilà]:",
+                                                       "Issue cloning object when posting log message, JSON stringify version is:",
+                                                       JSON.stringify(payload)
+                                                       ] });
+      }
+    }
+    console.debug = (...args) => {
+        post({ level: "debug", msg: ["[Voilà]:", ...args] });
+        _debug(...args);
+    };
+
+    console.info = console.info = (...args) => {
+        post({ level: "info", msg: ["[Voilà]:", ...args] });
+        _info(...args);
+    };
+
+    console.warn = (...args) => {
+        post({ level: "warn", msg: ["[Voilà]:", ...args] });
+        _warn(...args);
+    };
+
+    console.error = (...args) => {
+        post({ level: "error", msg: ["[Voilà]:", ...args] });
+        _error(...args);
+    };
+  </script>
+
+
+
+
+
+
+<style type="text/css">
+    pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: var(--jp-cell-editor-active-background) }
+.highlight { background: var(--jp-cell-editor-background); color: var(--jp-mirror-editor-variable-color) }
+.highlight .c { color: var(--jp-mirror-editor-comment-color); font-style: italic } /* Comment */
+.highlight .err { color: var(--jp-mirror-editor-error-color) } /* Error */
+.highlight .k { color: var(--jp-mirror-editor-keyword-color); font-weight: bold } /* Keyword */
+.highlight .o { color: var(--jp-mirror-editor-operator-color); font-weight: bold } /* Operator */
+.highlight .p { color: var(--jp-mirror-editor-punctuation-color) } /* Punctuation */
+.highlight .ch { color: var(--jp-mirror-editor-comment-color); font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: var(--jp-mirror-editor-comment-color); font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: var(--jp-mirror-editor-comment-color); font-style: italic } /* Comment.Preproc */
+.highlight .cpf { color: var(--jp-mirror-editor-comment-color); font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: var(--jp-mirror-editor-comment-color); font-style: italic } /* Comment.Single */
+.highlight .cs { color: var(--jp-mirror-editor-comment-color); font-style: italic } /* Comment.Special */
+.highlight .kc { color: var(--jp-mirror-editor-keyword-color); font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: var(--jp-mirror-editor-keyword-color); font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: var(--jp-mirror-editor-keyword-color); font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: var(--jp-mirror-editor-keyword-color); font-weight: bold } /* Keyword.Pseudo */
+.highlight .kr { color: var(--jp-mirror-editor-keyword-color); font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: var(--jp-mirror-editor-keyword-color); font-weight: bold } /* Keyword.Type */
+.highlight .m { color: var(--jp-mirror-editor-number-color) } /* Literal.Number */
+.highlight .s { color: var(--jp-mirror-editor-string-color) } /* Literal.String */
+.highlight .ow { color: var(--jp-mirror-editor-operator-color); font-weight: bold } /* Operator.Word */
+.highlight .pm { color: var(--jp-mirror-editor-punctuation-color) } /* Punctuation.Marker */
+.highlight .w { color: var(--jp-mirror-editor-variable-color) } /* Text.Whitespace */
+.highlight .mb { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Bin */
+.highlight .mf { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Float */
+.highlight .mh { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Hex */
+.highlight .mi { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Integer */
+.highlight .mo { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Oct */
+.highlight .sa { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Affix */
+.highlight .sb { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Backtick */
+.highlight .sc { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Char */
+.highlight .dl { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Delimiter */
+.highlight .sd { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Doc */
+.highlight .s2 { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Double */
+.highlight .se { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Escape */
+.highlight .sh { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Heredoc */
+.highlight .si { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Interpol */
+.highlight .sx { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Other */
+.highlight .sr { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Regex */
+.highlight .s1 { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Single */
+.highlight .ss { color: var(--jp-mirror-editor-string-color) } /* Literal.String.Symbol */
+.highlight .il { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Integer.Long */
+  </style>
+
+
+
+    <script src="/voila/templates/lab/static/voila-style.js?v=58d4fd817fec0c9702983a9f8e6e449d73dcef783a73e174d871f50999e9945bb27bc5c321447b42688420f914058aa894becea01bc71900d54423d0f5a3698d" ></script>
+  
+
+  
+  <!-- voila spinner -->
+  <style>
+    #loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 75vh;
+        color: var(--jp-content-font-color1);
+        font-family: sans-serif;
+        z-index: 100;
+        position: relative;
+    }
+
+    .spinner {
+      animation: rotation 2s infinite linear;
+      transform-origin: 50% 50%;
+    }
+
+    .spinner-container {
+      width: 10%;
+    }
+
+    @keyframes rotation {
+      from {transform: rotate(0deg);}
+      to   {transform: rotate(359deg);}
+    }
+
+    .voila-spinner-color1{
+      fill:#268380;
+    }
+
+    .voila-spinner-color2{
+      fill:#f8e14b;
+    }
+  </style>
+
+
+  <style>
+    /*Hide empty cells*/
+    .jp-mod-noOutputs.jp-mod-noInput {
+      display: none;
+    }
+  </style>
+
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@^5/css/all.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@^5/css/v4-shims.min.css" type="text/css" />
+
+  
+<link rel="stylesheet" type="text/css" href="/voila/templates/lab/static/index.css?v=0cafa950773a3628d1e570a8345f714642735deb33894cbfa05ca44b6144a734731910fb7bf1f92dcb8187472657f67c6d6cfedf1d80d0bd53398f6b61a0760f">
+
+    <link rel="stylesheet" type="text/css" href="/voila/templates/lab/static/theme-light.css?v=d89d301f3a7604950979af8745af5ca08279fd234f07b2fb795a449d326681d8b4b0d239af551128f2131970c5b5c4bd4fd1bdc3d033bf39241b0f6f90e6bd9c">
+
+<style type="text/css">
+/* Force rendering true colors when outputing to pdf */
+* {
+  -webkit-print-color-adjust: exact;
+}
+
+/* Misc */
+a.anchor-link {
+  display: none;
+}
+
+.highlight  {
+  margin: 0.4em;
+}
+
+/* Input area styling */
+.jp-InputArea {
+  overflow: hidden;
+}
+
+.jp-InputArea-editor {
+  overflow: hidden;
+}
+
+.CodeMirror pre {
+  margin: 0;
+  padding: 0;
+}
+
+/* Using table instead of flexbox so that we can use break-inside property */
+/* CSS rules under this comment should not be required anymore after we move to the JupyterLab 4.0 CSS */
+
+
+.jp-CodeCell.jp-mod-outputsScrolled .jp-OutputArea-prompt {
+  min-width: calc(
+    var(--jp-cell-prompt-width) - var(--jp-private-cell-scrolling-output-offset)
+  );
+}
+
+.jp-OutputArea-child {
+  display: table;
+  width: 100%;
+}
+
+.jp-OutputPrompt {
+  display: table-cell;
+  vertical-align: top;
+  min-width: var(--jp-cell-prompt-width);
+}
+
+body[data-format='mobile'] .jp-OutputPrompt {
+  display: table-row;
+}
+
+.jp-OutputArea-output {
+  display: table-cell;
+  width: 100%;
+}
+
+body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
+  display: table-row;
+}
+
+.jp-OutputArea-output.jp-OutputArea-executeResult {
+  width: 100%;
+}
+
+/* Hiding the collapser by default */
+.jp-Collapser {
+  display: none;
+}
+
+@media print {
+  .jp-Cell-inputWrapper,
+  .jp-Cell-outputWrapper {
+    display: block;
+  }
+
+  .jp-OutputArea-child {
+    break-inside: avoid-page;
+  }
+}
+</style>
+
+</head><link rel="icon" href="data:;base64,=">
+
+<body class="jp-Notebook theme-light" data-base-url="/voila/" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light" data-voila="voila">
+
+
+  <div id="loading" style="display: flex;">
+    <div class="spinner-container">
+      <svg class="spinner" data-name="c1" version="1.1" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><metadata><rdf:RDF><cc:Work rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/><dc:title>voila</dc:title></cc:Work></rdf:RDF></metadata><title>spin</title><path class="voila-spinner-color1" d="m250 405c-85.47 0-155-69.53-155-155s69.53-155 155-155 155 69.53 155 155-69.53 155-155 155zm0-275.5a120.5 120.5 0 1 0 120.5 120.5 120.6 120.6 0 0 0-120.5-120.5z"/><path class="voila-spinner-color2" d="m250 405c-85.47 0-155-69.53-155-155a17.26 17.26 0 1 1 34.51 0 120.6 120.6 0 0 0 120.5 120.5 17.26 17.26 0 1 1 0 34.51z"/></svg>
+    </div>
+    <h2 id="loading_text">Running ...</h2>
+  </div>
+
+<script>
+  window.voila_heartbeat = function() {
+    console.log('Ok, voila is still executing...');
+  }
+  window.update_loading_text = function(cell_index, cell_count, text) {
+    const spinner = document.getElementById("loading")
+    if(spinner && spinner.style.display === "none"){
+      spinner.style.display="flex";
+    }
+    var el = document.getElementById("loading_text");
+    innterText = text ?? `Executing ${cell_index} of ${cell_count}`
+    if(el){
+      el.innerHTML = innterText;
+    }
+  }
+  window.display_cells = function() {
+    // TODO Apply the same logic to Voici
+    if(!window.themeLoaded){
+      window.cellLoaded = true;
+      return;
+    }
+    // remove the loading element
+    var el = document.getElementById("loading");
+    if(el){
+      el.parentNode.removeChild(el);
+    }
+    // show the cell output
+    el = document.getElementById("rendered_cells");
+    if(el){
+      el.style.display = '';
+    }
+  }
+
+  window.voila_process = window.update_loading_text;
+  window.voila_finish = window.display_cells;
+</script>
+<div id="rendered_cells" style="display: none">
+  <div>
+
+  
+  
+    
+
+    <script id="jupyter-config-data" type="application/json">
+      {"appUrl": "voila/", "appVersion": "0.5.7", "baseUrl": "/", "disabledExtensions": [], "extensionConfig": {}, "federated_extensions": [{"extension": "./extension", "load": "static\\remoteEntry.066a8e6528af26da35a7.js", "name": "lexcube"}, {"extension": "./extension", "load": "static/remoteEntry.66500334d7b36213676e.js", "mimeExtension": "./mimeExtension", "name": "jupyterlab-plotly"}, {"extension": "./extension", "load": "static/remoteEntry.febb837ab3b6ef743bf7.js", "name": "@pyviz/jupyterlab_pyviz", "style": "./style"}], "fullLabextensionsUrl": "/voila/labextensions", "fullMathjaxUrl": null, "fullStaticUrl": "/voila/static", "jupyterLabTheme": "light", "kernelId": "1274a8cc-24a2-4f45-b7c4-28d3eb93e010", "mathjaxConfig": null, "terminalsAvailable": false, "themesUrl": "/voila/api/themes"}
+    </script>
+
+    
+
+    <div cell-index="1">
+          <script>
+            voila_process(1, 16)
+          </script>
+          
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="Visualizing-Numpy-Data-with-Lexcube">Visualizing Numpy Data with Lexcube<a class="anchor-link" href="#Visualizing-Numpy-Data-with-Lexcube">&#182;</a></h1>
+</div>
+</div>
+</div>
+</div>
+        </div><div cell-index="2">
+          <script>
+            voila_process(2, 16)
+          </script>
+          
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>You can visualize any arbitrary 3D data from Numpy with Lexcube:</p>
+
+</div>
+</div>
+</div>
+</div>
+        </div><div cell-index="3">
+          <script>
+            voila_process(3, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
+
+</div>
+        </div><div cell-index="4">
+          <script>
+            voila_process(4, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
+
+</div>
+        </div><div cell-index="5">
+          <script>
+            voila_process(5, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell  jp-mod-noInput ">
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Keys in JLD2 file: [&#39;y&#39;]
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+        </div><div cell-index="6">
+          <script>
+            voila_process(6, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
+
+</div>
+        </div><div cell-index="7">
+          <script>
+            voila_process(7, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
+
+</div>
+        </div><div cell-index="8">
+          <script>
+            voila_process(8, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell  jp-mod-noInput ">
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+
+
+  <script type="application/vnd.voila.cell-output+json">
+    {"data": {"text/plain": "51"}, "execution_count": 6, "metadata": {}, "output_type": "execute_result", "trusted": true}
+  </script>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+        </div><div cell-index="9">
+          <script>
+            voila_process(9, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
+
+</div>
+        </div><div cell-index="10">
+          <script>
+            voila_process(10, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell  jp-mod-noInput ">
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+
+
+  <script type="application/vnd.voila.cell-output+json">
+    {"data": {"text/plain": "(51, 256, 512)"}, "execution_count": 8, "metadata": {}, "output_type": "execute_result", "trusted": true}
+  </script>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+        </div><div cell-index="11">
+          <script>
+            voila_process(11, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell  jp-mod-noInput ">
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+
+
+  <script type="application/vnd.voila.cell-output+json">
+    {"data": {"application/vnd.jupyter.widget-view+json": {"model_id": "10f46b41580843c39565883477577e06", "version_major": 2, "version_minor": 0}, "text/plain": "Cube3DWidget(api_metadata={\u0027/api\u0027: {\u0027status\u0027: \u0027ok\u0027, \u0027api_version\u0027: 5}, \u0027/api/datasets\u0027: [{\u0027id\u0027: \u0027default\u0027, \u0027sh\u2026"}, "execution_count": 9, "metadata": {}, "output_type": "execute_result", "trusted": true}
+  </script>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+        </div><div cell-index="12">
+          <script>
+            voila_process(12, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell  jp-mod-noInput ">
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+
+
+  <script type="application/vnd.voila.cell-output+json">
+    {"data": {"text/plain": "\u0027When using Lexcube-generated images, please acknowledge/cite: M. S\u00f6chting, M. D. Mahecha, D. Montero and G. Scheuermann, \"Lexcube: Interactive Visualization of Large Earth System Data Cubes,\" in IEEE Computer Graphics and Applications, vol. 44, no. 1, pp. 25-37, Jan.-Feb. 2024, doi: https://www.doi.org/10.1109/MCG.2023.3321989.\u0027"}, "execution_count": 10, "metadata": {}, "output_type": "execute_result", "trusted": true}
+  </script>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+        </div><div cell-index="13">
+          <script>
+            voila_process(13, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell  jp-mod-noInput ">
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+
+
+  <script type="application/vnd.voila.cell-output+json">
+    {"data": {"application/vnd.jupyter.widget-view+json": {"model_id": "46623eb5a6b9444ea7977a0b0dbe5286", "version_major": 2, "version_minor": 0}, "text/plain": "Cube3DWidget(api_metadata={\u0027/api\u0027: {\u0027status\u0027: \u0027ok\u0027, \u0027api_version\u0027: 5}, \u0027/api/datasets\u0027: [{\u0027id\u0027: \u0027default\u0027, \u0027sh\u2026"}, "execution_count": 11, "metadata": {}, "output_type": "execute_result", "trusted": true}
+  </script>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+        </div><div cell-index="14">
+          <script>
+            voila_process(14, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell  jp-mod-noInput ">
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+
+
+  <script type="application/vnd.voila.cell-output+json">
+    {"data": {"application/vnd.jupyter.widget-view+json": {"model_id": "20816dc62b2243078cdfee8d8db0e9f8", "version_major": 2, "version_minor": 0}, "text/plain": "Sliders(children=(HBox(children=(IntRangeSlider(value=(0, 0), description=\u0027X:\u0027, max=511),)), HBox(children=(In\u2026"}, "execution_count": 12, "metadata": {}, "output_type": "execute_result", "trusted": true}
+  </script>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+        </div><div cell-index="15">
+          <script>
+            voila_process(15, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell  jp-mod-noInput ">
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+
+
+  <script type="application/vnd.voila.cell-output+json">
+    {"data": {"application/vnd.jupyter.widget-view+json": {"model_id": "956f7f2e71d2416982f32fb5025b0ed4", "version_major": 2, "version_minor": 0}, "text/plain": "Sliders(children=(HBox(children=(IntRangeSlider(value=(0, 0), description=\u0027X:\u0027, max=511),)), HBox(children=(In\u2026"}, "execution_count": 13, "metadata": {}, "output_type": "execute_result", "trusted": true}
+  </script>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+        </div><div cell-index="16">
+          <script>
+            voila_process(16, 16)
+          </script>
+          <div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
+
+</div>
+        </div></div>
+</div>
+<script type="text/javascript">
+  window.voila_finish();
+</script>
+<script src="/voila/static/voila.js"></script>
+
+</body>
+
+
+
+</html>
